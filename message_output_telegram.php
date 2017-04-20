@@ -95,7 +95,7 @@ class message_output_telegram extends message_output {
      * @param stdClass $form preferences form class
      * @param array $preferences preferences array
      */
-    function process_form($form, &$preferences){
+    public function process_form($form, &$preferences) {
         if (isset($form->telegram_bottoken) && !empty($form->telegram_bottoken)) {
             $preferences['message_processor_telegram_bottoken'] = $form->telegram_bottoken;
         }
@@ -111,8 +111,8 @@ class message_output_telegram extends message_output {
      * @param int $userid the user id
      */
     public function load_data(&$preferences, $userid) {
-        $preferences->telegram_bottoken= get_user_preferences('message_processor_telegram_bottoken', '', $userid);
-        $preferences->telegram_chatid= get_user_preferences('message_processor_telegram_chatid', '', $userid);
+        $preferences->telegram_bottoken = get_user_preferences('message_processor_telegram_bottoken', '', $userid);
+        $preferences->telegram_chatid = get_user_preferences('message_processor_telegram_chatid', '', $userid);
     }
 
     /**
