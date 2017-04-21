@@ -26,6 +26,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['notconfigured'] = 'The Telegram server hasn\'t been configured so Telegram messages cannot be sent';
-$string['pluginname'] = 'Telegram message processor';
+$string['pluginname'] = 'Telegram';
 $string['telegrambottoken'] = 'Telegram bot token';
 $string['telegramchatid'] = 'Telegram chat id';

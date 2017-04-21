@@ -96,10 +96,10 @@ class message_output_telegram extends message_output {
      * @param array $preferences preferences array
      */
     public function process_form($form, &$preferences) {
-        if (isset($form->telegram_bottoken) && !empty($form->telegram_bottoken)) {
+        if (isset($form->telegram_bottoken)) {
             $preferences['message_processor_telegram_bottoken'] = $form->telegram_bottoken;
         }
-        if (isset($form->telegram_chatid) && !empty($form->telegram_chatid)) {
+        if (isset($form->telegram_chatid)) {
             $preferences['message_processor_telegram_chatid'] = $form->telegram_chatid;
         }
     }
