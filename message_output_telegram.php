@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/message/output/lib.php');
+require_once($CFG->dirroot.'/lib/filelib.php');
 
 /**
  * The telegram message processor
