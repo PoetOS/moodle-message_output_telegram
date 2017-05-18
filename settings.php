@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for telegram message plugin.
+ * Telegram message plugin settings.
  *
  * @package message_telegram
  * @author  Mike Churchward
@@ -23,13 +23,12 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$string['configsitebottoken'] = 'When using a site bot, enter the site bot token here.';
-$string['configusesitebottoken'] = 'Configure the telegram bot and token for the site so users don\'t have to.';
-$string['notconfigured'] = 'The Telegram server hasn\'t been configured so Telegram messages cannot be sent';
-$string['pluginname'] = 'Telegram';
-$string['sitebottoken'] = 'Bot token for site';
-$string['telegrambottoken'] = 'Telegram bot token';
-$string['telegramchatid'] = 'Telegram chat id';
-$string['usesitebottoken'] = 'Use site bot token';
+if ($ADMIN->fulltree) {
+    $settings->add(new admin_setting_configcheckbox('message_telegram/usesitebottoken',
+        get_string('usesitebottoken', 'message_telegram'),
+        get_string('configusesitebottoken', 'message_telegram'), 1));
+    $settings->add(new admin_setting_configtext('message_telegram/sitebottoken', get_string('sitebottoken', 'message_telegram'),
+        get_string('configsitebottoken', 'message_telegram'), '', PARAM_TEXT));
+}

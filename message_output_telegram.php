@@ -57,8 +57,14 @@ class message_output_telegram extends message_output {
             return true;
         }
 
-        if (empty($usertoken = get_user_preferences('message_processor_telegram_bottoken', '', $eventdata->userto->id))) {
-            return true;
+        if (get_config('message_telegram', 'usesitebottoken')) {
+            if (empty($usertoken = get_config('message_telegram', 'sitebottoken'))) {
+                return true;
+            }
+        } else {
+            if (empty($usertoken = get_user_preferences('message_processor_telegram_bottoken', '', $eventdata->userto->id))) {
+                return true;
+            }
         }
         if (empty($chatid = get_user_preferences('message_processor_telegram_chatid', '', $eventdata->userto->id))) {
             return true;
@@ -82,8 +88,11 @@ class message_output_telegram extends message_output {
         if (!$this->is_system_configured()) {
             return get_string('notconfigured', 'message_telegram');
         } else {
-            $bottoken = get_string('telegrambottoken', 'message_telegram').': <input size="30" name="telegram_bottoken" value="'.
-                s($preferences->telegram_bottoken).'" /><br />';
+            $bottoken = '';
+            if (!get_config('message_telegram', 'usesitebottoken')) {
+                $bottoken = get_string('telegrambottoken', 'message_telegram').
+                    ': <input size="30" name="telegram_bottoken" value="'.s($preferences->telegram_bottoken).'" /><br />';
+            }
             $chatid = get_string('telegramchatid', 'message_telegram').': <input size="30" name="telegram_chatid" value="'.
                 s($preferences->telegram_chatid).'" />';
             return $bottoken.$chatid;
@@ -128,7 +137,16 @@ class message_output_telegram extends message_output {
         if ($user === null) {
             $user = $USER;
         }
-        return (!empty(get_user_preferences('message_processor_telegram_bottoken', null, $user->id)) &&
+        return ((get_config('message_telegram', 'usesitebottoken') ||
+                 !empty(get_user_preferences('message_processor_telegram_bottoken', null, $user->id))) &&
                 !empty(get_user_preferences('message_processor_telegram_chatid', null, $user->id)));
+    }
+
+    /**
+     * Tests whether the Telegram settings have been configured
+     * @return boolean true if Telegram is configured
+     */
+    public function is_system_configured() {
+        return (empty(get_config('message_telegram', 'usesitebottoken')) || !empty(get_config('message_telegram', 'sitebottoken')));
     }
 }
