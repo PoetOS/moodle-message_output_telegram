@@ -1,0 +1,5 @@
+Release Notes
+
+Version 3.2.3 (Build - 2017051900)
+Improvements:
+Added the ability to configure the new bot at the site level, so users only need to configure their chat id. Made that the default.
