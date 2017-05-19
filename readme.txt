@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/mchurchward/moodle-message_output_telegram.png?branch=master)](https://travis-ci.org/mchurchward/moodle-message_output_telegram)
 First, create a new bot - https://core.telegram.org/bots#3-how-do-i-create-a-bot
 (talk to botfather using https://telegram.me/botfather)
 That will give you the token you need for configuring the Moodle plugin.
