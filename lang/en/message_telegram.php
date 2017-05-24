@@ -25,11 +25,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['configsitebotname'] = 'The site bot name specified at bot creation.';
 $string['configsitebottoken'] = 'When using a site bot, enter the site bot token here.';
-$string['configusesitebottoken'] = 'Configure the telegram bot and token for the site so users don\'t have to.';
+$string['configsitebotusername'] = 'The site bot username specified at bot creation.';
+$string['connectinstructions'] = 'Once you have clicked the link below, you will need to allow the link to open in Telegram with
+your Telegram account. In Telegram, click the "Start" button in the "{$a}" chat that opens to connect your account to Moodle.';
+$string['connectme'] = 'Connect my account to Telegram.';
 $string['notconfigured'] = 'The Telegram server hasn\'t been configured so Telegram messages cannot be sent';
 $string['pluginname'] = 'Telegram';
+$string['sitebotname'] = 'Bot name for site';
 $string['sitebottoken'] = 'Bot token for site';
+$string['sitebotusername'] = 'Bot username for site';
 $string['telegrambottoken'] = 'Telegram bot token';
 $string['telegramchatid'] = 'Telegram chat id';
-$string['usesitebottoken'] = 'Use site bot token';
+$string['removetelegram'] = 'Remove Telegram connection';
+$string['requirehttps'] = 'Site must use HTTPS for Telegram\'s webhook function.';
+$string['setwebhook'] = 'Setup Telegram webhook';
