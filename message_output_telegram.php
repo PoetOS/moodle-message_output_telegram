@@ -90,7 +90,7 @@ class message_output_telegram extends message_output {
      * @param array $preferences preferences array
      */
     public function process_form($form, &$preferences) {
-        return $this->manager->get_user_chatid();
+        return $this->manager->set_chatid();
     }
 
     /**

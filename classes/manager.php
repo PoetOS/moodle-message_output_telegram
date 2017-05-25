@@ -43,6 +43,11 @@ class manager {
     private $secretprefix = 'usersecret::';
 
     /**
+     * @var $curl The curl object used in this run. Avoids continuous creation of a curl object.
+     */
+    private $curl = null;
+
+    /**
      * Constructor. Loads all needed data.
      */
     public function __construct() {
@@ -58,13 +63,11 @@ class manager {
 
         if (empty($this->config('sitebottoken'))) {
             return true;
-        } else if (empty($chatid = get_user_preferences('message_processor_telegram_chatid', '', $eventdata->userto->id))) {
+        } else if (empty($chatid = get_user_preferences('message_processor_telegram_chatid', '', $userid))) {
             return true;
         }
 
-        $curl = new curl();
-        $response = json_decode($curl->get('https://api.telegram.org/bot'.$usertoken.'/sendMessage',
-            ['chat_id' => $chatid, 'text' => $message]));
+        $response = $this->send_api_command('sendMessage', ['chat_id' => $chatid, 'text' => $message]);
         return (!empty($response) && isset($response->ok) && ($response->ok == true));
     }
 
@@ -104,7 +107,8 @@ class manager {
             $configbutton .= '<div align="center"><a href="'.$url.'" target="_blank">'.
                 get_string('connectme', 'message_telegram') . '</a></div>';
         } else {
-            $url = new \moodle_url($this->redirect_uri(), ['removechatid' => $userid, 'sesskey' => sesskey()]);
+            $url = new \moodle_url($this->redirect_uri(), ['action' => 'removechatid', 'userid' => $userid,
+                'sesskey' => sesskey()]);
             $configbutton = '<a href="'.$url.'">' . get_string('removetelegram', 'message_telegram') . '</a>';
         }
 
@@ -132,7 +136,7 @@ class manager {
         }
 
         if ($userid != $USER->id) {
-            require_capability('moodle/site:config', context_system::instance());
+            require_capability('moodle/site:config', \context_system::instance());
         }
 
         return set_user_preference('message_processor_telegram_chatid', $this->secretprefix . $this->usersecret(), $userid);
@@ -151,7 +155,7 @@ class manager {
         }
 
         if ($userid != $USER->id) {
-            require_capability('moodle/site:config', context_system::instance());
+            require_capability('moodle/site:config', \context_system::instance());
         }
 
         $usersecret = substr(get_user_preferences('message_processor_telegram_chatid', '', $userid), strlen($this->secretprefix));
@@ -165,7 +169,10 @@ class manager {
      * @return boolean True if the id is set.
      */
     public function is_chatid_set($userid, $preferences = null) {
-        if (($preferences === null) || !isset($preferences->telegram_chatid)) {
+        if ($preferences === null) {
+            $preferences = new \stdClass();
+        }
+        if (!isset($preferences->telegram_chatid)) {
             $preferences->telegram_chatid = get_user_preferences('message_processor_telegram_chatid', '', $userid);
         }
         return (!empty($preferences->telegram_chatid) && (strpos($preferences->telegram_chatid, $this->secretprefix) !== 0));
@@ -188,8 +195,7 @@ class manager {
         if (empty($this->config('sitebottoken'))) {
             return false;
         } else {
-            $curl = new \curl();
-            $response = json_decode($curl->get('https://api.telegram.org/bot'.$this->config('sitebottoken').'/getMe'));
+            $response = $this->send_api_command('getMe');
             if ($response->ok) {
                 $this->set_config('sitebotname', $response->result->first_name);
                 $this->set_config('sitebotusername', $response->result->username);
@@ -203,13 +209,20 @@ class manager {
     /**
      * Get the latest information from the Slack bot, and see if the user has initiated a connection.
      * Only needed if no webHook has been created.
+     * @var int $userid The id of the user in question.
+     * @return boolean Success.
      */
-    public function get_user_chatid() {
+    public function set_chatid($userid = null) {
+        global $USER;
+
+        if ($userid === null) {
+            $userid = $USER->id;
+        }
+
         if (empty($this->config('sitebottoken'))) {
             return false;
         } else {
-            $curl = new \curl();
-            $response = json_decode($curl->get('https://api.telegram.org/bot'.$this->config('sitebottoken').'/getUpdate'));
+            $response = $this->send_api_command('getUpdates');
             if ($response->ok) {
                 foreach ($response->result as $index => $object) {
                     if (isset($object->message)) {
@@ -224,5 +237,60 @@ class manager {
                 return false;
             }
         }
+    }
+
+    /**
+     * Remove the user's Telegram chat id from the preferences.
+     * @var int $userid The id to be cleared.
+     * @return string Any information message.
+     */
+    public function remove_chatid($userid = null) {
+        global $USER;
+
+        if ($userid === null) {
+            $userid = $USER->id;
+        } else if ($userid != $USER->id) {
+            require_capability('moodle/site:config', \context_system::instance());
+        }
+        unset_user_preference('message_processor_telegram_chatid', $userid);
+
+        return '';
+    }
+
+    /**
+     * Set the webhook for this site into the Telegram Bot.
+     * @return string Empty if successful, otherwise the error message.
+     */
+    public function set_webhook() {
+        if (empty($this->config('sitebottoken'))) {
+            $message = get_string('sitebottokennotsetup', 'message_telegram');
+        } else {
+            $response = $this->send_api_command('setWebhook', ['url' => $this->redirect_uri(), 'allowed_updates' => 'message']);
+            if (!empty($response) && isset($response->ok) && ($response->ok == true)) {
+                $this->set_config('webhook', '1');
+                $message = '';
+            } else if (!empty($response) && isset($response->error_code) && isset($response->description)) {
+                $message = $response->description;
+            }
+        }
+        return $message;
+    }
+
+    /**
+     * Send a Telegram API command and return the results.
+     * @var string $command The API command to send.
+     * @var array $params The parameters to send to the API command. Can be ommited.
+     * @return object The JSON decoded return object.
+     */
+    private function send_api_command($command, $params = null) {
+        if (empty($this->config('sitebottoken'))) {
+            return false;
+        }
+
+        if ($this->curl === null) {
+            $this->curl = new \curl();
+        }
+
+        return json_decode($this->curl->get('https://api.telegram.org/bot'.$this->config('sitebottoken').'/'.$command, $params));
     }
 }

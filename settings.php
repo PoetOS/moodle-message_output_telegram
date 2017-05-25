@@ -32,6 +32,34 @@ if ($ADMIN->fulltree) {
         $botname = $telegrammanager->config('sitebotname');
         $botusername = $telegrammanager->config('sitebotusername');
     }
+
+    $telegrammanager = new message_telegram\manager();
+    if (empty($telegrammanager->config('sitebottoken'))) {
+        $site = get_site();
+        $uniquename = $site->fullname . ' ' . get_string('notifications');
+        $sitehostname = parse_url($CFG->wwwroot, PHP_URL_HOST);
+        $lastdot = strrpos($sitehostname, '.');
+        if ($lastdot !== false) {
+            $sitehostname = substr($sitehostname, 0, $lastdot);
+        }
+        $botusername = strrchr($sitehostname, '.');
+        if ($botusername === false) {
+            $botusername = $sitehostname;
+        } else {
+            $botusername = str_replace('.', '', $botusername);
+        }
+        // The username cannot be longer than 32 characters total, and must end in "bot".
+        $botusername = substr($botusername, 0, 29) . 'Bot';
+
+        $url = 'https://telegram.me/botfather';
+        $link = '<p><a href="'.$url.'" target="_blank">'.$url.'</a></p>';
+        $a = new stdClass();
+        $a->name = $uniquename;
+        $a->username = $botusername;
+        $text = get_string('setupinstructions', 'message_telegram', $a);
+        $settings->add(new admin_setting_heading('setuptelegram', '', $text . $link));
+    }
+
     $settings->add(new admin_setting_configtext('message_telegram/sitebottoken', get_string('sitebottoken', 'message_telegram'),
         get_string('configsitebottoken', 'message_telegram'), '', PARAM_TEXT));
     $settings->add(new admin_setting_configtext('message_telegram/sitebotname', get_string('sitebotname', 'message_telegram'),

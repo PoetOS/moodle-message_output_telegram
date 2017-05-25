@@ -33,9 +33,8 @@ $PAGE->set_context(context_system::instance());
 
 require_login();
 
-// $telegrammanager = new message_telegram\manager();
+$telegrammanager = new message_telegram\manager();
 
-$message = '';
 if ($action == 'setwebhook') {
     require_sesskey();
     require_capability('moodle/site:config', context_system::instance());
@@ -43,22 +42,22 @@ if ($action == 'setwebhook') {
         $message = get_string('requirehttps', 'message_telegram');
     } else {
         if (empty(get_config('message_telegram', 'webhook'))) {
-            $curl = new curl();
-            $response = json_decode($curl->get('https://api.telegram.org/bot'.get_config('message_telegram', 'sitebottoken').
-                '/setWebhook',
-                ['url' => 'http://localhost/moodlehq.git/message/output/telegram/telegramconnect.php', 'allowed_updates' => 'message']));
-            if (!empty($response) && isset($response->ok) && ($response->ok == true)) {
-                set_config('webhook', '1', 'message_telegram');
-            } else if (!empty($response) && isset($response->error_code) && isset($response->description)) {
-                $message = $response->description;
-            }
+            $message = $telegrammanager->set_webhook();
         }
     }
     redirect(new moodle_url('/admin/settings.php', ['section' => 'messagesettingtelegram']), $message);
+
+} else if ($action == 'removechatid') {
+    require_sesskey();
+    $userid = optional_param('userid', 0, PARAM_INT);
+    if ($userid != 0) {
+        $message = $telegrammanager->remove_chatid($userid);
+    }
+    redirect(new moodle_url('/admin/settings.php', ['section' => 'messagesettingtelegram']), $message);
+
+// This is for debugging purposes only, and should be removed once code is final.
 } else if ($action == 'getUpdates') {
     require_capability('moodle/site:config', context_system::instance());
-    $curl = new curl();
-    $response = json_decode($curl->get('https://api.telegram.org/bot'.get_config('message_telegram', 'sitebottoken').
-        '/getUpdates'));
+    $response = $telegrammanager->send_api_command('getUpdates');
     print_object($response);
 }
