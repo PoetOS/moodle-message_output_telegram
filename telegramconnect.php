@@ -55,8 +55,8 @@ if ($action == 'setwebhook') {
     }
     redirect(new moodle_url('/admin/settings.php', ['section' => 'messagesettingtelegram']), $message);
 
-// This is for debugging purposes only, and should be removed once code is final.
 } else if ($action == 'getUpdates') {
+    // This is for debugging purposes only, and should be removed once code is final.
     require_capability('moodle/site:config', context_system::instance());
     $response = $telegrammanager->send_api_command('getUpdates');
     print_object($response);

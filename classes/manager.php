@@ -262,6 +262,7 @@ class manager {
      * @return string Empty if successful, otherwise the error message.
      */
     public function set_webhook() {
+        return 'This feature is still under development... Stand by.';
         if (empty($this->config('sitebottoken'))) {
             $message = get_string('sitebottokennotsetup', 'message_telegram');
         } else {

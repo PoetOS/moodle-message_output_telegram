@@ -30,7 +30,8 @@ $string['configsitebottoken'] = 'Enter the site bot token from Botfather here.';
 $string['configsitebotusername'] = 'This will be filled in automatically when you save the bot token.';
 $string['connectinstructions'] = 'Once you have clicked the link below, you will need to allow the link to open in Telegram with
 your Telegram account. In Telegram, click the "Start" button in the "{$a}" chat that opens to connect your account to Moodle.
-Once completed, come back to this page and click "Save changes".';
+Once completed, come back to this page and click "Save changes". Full documentation
+<a href="https://docs.moodle.org/33/en/Telegram_message_processor#Configuring_user_preferences" target="_blank">here</a>.';
 $string['connectme'] = 'Connect my account to Telegram.';
 $string['notconfigured'] = 'The Telegram server hasn\'t been configured so Telegram messages cannot be sent';
 $string['pluginname'] = 'Telegram';
@@ -44,5 +45,6 @@ $string['removetelegram'] = 'Remove Telegram connection';
 $string['requirehttps'] = 'Site must use HTTPS for Telegram\'s webhook function.';
 $string['setupinstructions'] = 'Create a new Telegram Bot using Botfather. Click the Botfather link below and open it in Telegram.
 Use the "/newbot" command in Telegram to start creating the bot. You will need to specify a botname, for example "{$a->name}", and a
-unique bot username, for example "{$a->username}".';
+unique bot username, for example "{$a->username}". Full documentation
+<a href="https://docs.moodle.org/33/en/Telegram_message_processor" target="_blank">here</a>.';
 $string['setwebhook'] = 'Setup Telegram webhook';
