@@ -25,10 +25,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2017040400;  // The current module version (Date: YYYYMMDDXX)
+$plugin->version  = 2017040404;  // The current module version (Date: YYYYMMDDXX)
 $plugin->requires = 2016111500; // Moodle version.
 
 $plugin->component = 'message_telegram';
 
-$plugin->release  = '3.2.0 (Build - 2017040400)';
-$plugin->maturity  = MATURITY_ALPHA;
+$plugin->release  = 'BETA 3.2.4 (Build - 2017052600)';
+$plugin->maturity  = MATURITY_BETA;

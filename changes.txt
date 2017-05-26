@@ -1,0 +1,9 @@
+Release Notes
+
+Version BETA 3.2.4 (Build - 2017052600)
+Improvements:
+Significant improvements to the setup process, with documentation at https://docs.moodle.org/33/en/Telegram_message_processor.
+
+Version BETA 3.2.3 (Build - 2017051900)
+Improvements:
+Added the ability to configure the new bot at the site level, so users only need to configure their chat id. Made that the default.

@@ -26,9 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Install the Telegram message processor
+ * Install the Telegram message processor.
  */
-
 function xmldb_message_telegram_install() {
     global $DB;
     $result = true;

@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/message/output/lib.php');
+require_once($CFG->dirroot.'/lib/filelib.php');
 
 /**
  * The telegram message processor
@@ -35,6 +36,13 @@ require_once($CFG->dirroot.'/message/output/lib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class message_output_telegram extends message_output {
+
+    /**
+     * Constructor to add needed properties to the Slack app.
+     */
+    public function __construct() {
+        $this->manager = new message_telegram\manager();
+    }
 
     /**
      * Processes the message and sends a notification via telegram
@@ -56,19 +64,7 @@ class message_output_telegram extends message_output {
             return true;
         }
 
-        if (empty($usertoken = get_user_preferences('message_processor_telegram_bottoken', '', $eventdata->userto->id))) {
-            return true;
-        }
-        if (empty($chatid = get_user_preferences('message_processor_telegram_chatid', '', $eventdata->userto->id))) {
-            return true;
-        }
-
-        $message = $eventdata->fullmessage;
-
-        $curl = new curl();
-        $response = json_decode($curl->get('https://api.telegram.org/bot'.$usertoken.'/sendMessage',
-            ['chat_id' => $chatid, 'text' => $message]));
-        return (!empty($response) && isset($response->ok) && ($response->ok == true));
+        return $this->manager->send_message($eventdata->fullmessage, $eventdata->userto->id);
     }
 
     /**
@@ -78,14 +74,12 @@ class message_output_telegram extends message_output {
      */
     public function config_form($preferences) {
         global $USER;
+
+        // If Telegram has not been configured, do nothing.
         if (!$this->is_system_configured()) {
             return get_string('notconfigured', 'message_telegram');
         } else {
-            $bottoken = get_string('telegrambottoken', 'message_telegram').': <input size="30" name="telegram_bottoken" value="'.
-                s($preferences->telegram_bottoken).'" /><br />';
-            $chatid = get_string('telegramchatid', 'message_telegram').': <input size="30" name="telegram_chatid" value="'.
-                s($preferences->telegram_chatid).'" />';
-            return $bottoken.$chatid;
+            return $this->manager->config_form($preferences, $USER->id);
         }
     }
 
@@ -95,13 +89,8 @@ class message_output_telegram extends message_output {
      * @param stdClass $form preferences form class
      * @param array $preferences preferences array
      */
-    function process_form($form, &$preferences){
-        if (isset($form->telegram_bottoken) && !empty($form->telegram_bottoken)) {
-            $preferences['message_processor_telegram_bottoken'] = $form->telegram_bottoken;
-        }
-        if (isset($form->telegram_chatid) && !empty($form->telegram_chatid)) {
-            $preferences['message_processor_telegram_chatid'] = $form->telegram_chatid;
-        }
+    public function process_form($form, &$preferences) {
+        return $this->manager->set_chatid();
     }
 
     /**
@@ -111,8 +100,7 @@ class message_output_telegram extends message_output {
      * @param int $userid the user id
      */
     public function load_data(&$preferences, $userid) {
-        $preferences->telegram_bottoken= get_user_preferences('message_processor_telegram_bottoken', '', $userid);
-        $preferences->telegram_chatid= get_user_preferences('message_processor_telegram_chatid', '', $userid);
+        $preferences->telegram_chatid = get_user_preferences('message_processor_telegram_chatid', '', $userid);
     }
 
     /**
@@ -127,7 +115,14 @@ class message_output_telegram extends message_output {
         if ($user === null) {
             $user = $USER;
         }
-        return (!empty(get_user_preferences('message_processor_telegram_bottoken', null, $user->id)) &&
-                !empty(get_user_preferences('message_processor_telegram_chatid', null, $user->id)));
+        return ($this->manager->is_chatid_set($user->id));
+    }
+
+    /**
+     * Tests whether the Telegram settings have been configured
+     * @return boolean true if Telegram is configured
+     */
+    public function is_system_configured() {
+        return (!empty(get_config('message_telegram', 'sitebotname')) && !empty(get_config('message_telegram', 'sitebottoken')));
     }
 }
