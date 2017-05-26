@@ -73,8 +73,8 @@ class manager {
 
     /**
      * Set the config item to the specified value, in the object and the database.
-     * @var string $name The name of the config item.
-     * @var string $value The value of the config item.
+     * @param string $name The name of the config item.
+     * @param string $value The value of the config item.
      */
     public function set_config($name, $value) {
         set_config($name, $value, 'message_telegram');
@@ -144,6 +144,7 @@ class manager {
 
     /**
      * Check that the received usersecret matches the user's usersecret stored in the database.
+     * @param string $receivedsecret The secret to test against the stored one.
      * @param int $userid The id of the user to set this for.
      * @return boolean Success or failure.
      */
@@ -209,7 +210,7 @@ class manager {
     /**
      * Get the latest information from the Slack bot, and see if the user has initiated a connection.
      * Only needed if no webHook has been created.
-     * @var int $userid The id of the user in question.
+     * @param int $userid The id of the user in question.
      * @return boolean Success.
      */
     public function set_chatid($userid = null) {
@@ -241,7 +242,7 @@ class manager {
 
     /**
      * Remove the user's Telegram chat id from the preferences.
-     * @var int $userid The id to be cleared.
+     * @param int $userid The id to be cleared.
      * @return string Any information message.
      */
     public function remove_chatid($userid = null) {
@@ -279,8 +280,8 @@ class manager {
 
     /**
      * Send a Telegram API command and return the results.
-     * @var string $command The API command to send.
-     * @var array $params The parameters to send to the API command. Can be ommited.
+     * @param string $command The API command to send.
+     * @param array $params The parameters to send to the API command. Can be ommited.
      * @return object The JSON decoded return object.
      */
     private function send_api_command($command, $params = null) {
