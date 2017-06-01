@@ -53,11 +53,11 @@ if ($action == 'setwebhook') {
     if ($userid != 0) {
         $message = $telegrammanager->remove_chatid($userid);
     }
-    redirect(new moodle_url('/admin/settings.php', ['section' => 'messagesettingtelegram']), $message);
+    redirect(new moodle_url('/message/notificationpreferences.php', ['userid' => $userid]), $message);
 
 } else if ($action == 'getUpdates') {
     // This is for debugging purposes only, and should be removed once code is final.
     require_capability('moodle/site:config', context_system::instance());
-    $response = $telegrammanager->send_api_command('getUpdates');
+    $response = $telegrammanager->get_updates();
     print_object($response);
 }

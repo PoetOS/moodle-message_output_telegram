@@ -223,9 +223,9 @@ class manager {
         if (empty($this->config('sitebottoken'))) {
             return false;
         } else {
-            $response = $this->send_api_command('getUpdates');
-            if ($response->ok) {
-                foreach ($response->result as $index => $object) {
+            $results = $this->get_updates();
+            if ($results !== false) {
+                foreach ($results as $index => $object) {
                     if (isset($object->message)) {
                         if ($this->usersecret_match(substr($object->message->text, strlen('/start ')))) {
                             set_user_preference('message_processor_telegram_chatid', $object->message->chat->id, $userid);
@@ -276,6 +276,19 @@ class manager {
             }
         }
         return $message;
+    }
+
+    /**
+     * Returns the results of a getUpdates API request.
+     * @return object The JSON decoded results object.
+     */
+    public function get_updates() {
+        $response = $this->send_api_command('getUpdates');
+        if ($response->ok) {
+            return $response->result;
+        } else {
+            return false;
+        }
     }
 
     /**
