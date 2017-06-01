@@ -27,14 +27,17 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
     $telegrammanager = new message_telegram\manager();
-    if ($telegrammanager->config('sitebottoken')) {
+
+    $sitebottoken = $telegrammanager->config('sitebottoken');
+    $botname = $telegrammanager->config('sitebotname');
+    $botusername = $telegrammanager->config('sitebotusername');
+
+    if (!empty($sitebottoken)) {
         $telegrammanager->update_bot_info();
-        $botname = $telegrammanager->config('sitebotname');
-        $botusername = $telegrammanager->config('sitebotusername');
     }
 
     $telegrammanager = new message_telegram\manager();
-    if (empty($telegrammanager->config('sitebottoken'))) {
+    if (empty($sitebottoken)) {
         $site = get_site();
         $uniquename = $site->fullname . ' ' . get_string('notifications');
         $sitehostname = parse_url($CFG->wwwroot, PHP_URL_HOST);
@@ -61,7 +64,7 @@ if ($ADMIN->fulltree) {
     }
 
     $settings->add(new admin_setting_configtext('message_telegram/sitebottoken', get_string('sitebottoken', 'message_telegram'),
-        get_string('configsitebottoken', 'message_telegram'), '', PARAM_TEXT));
+        get_string('configsitebottoken', 'message_telegram'), $sitebottoken, PARAM_TEXT));
     $settings->add(new admin_setting_configtext('message_telegram/sitebotname', get_string('sitebotname', 'message_telegram'),
         get_string('configsitebotname', 'message_telegram'), $botname, PARAM_TEXT));
     $settings->add(new admin_setting_configtext('message_telegram/sitebotusername',
