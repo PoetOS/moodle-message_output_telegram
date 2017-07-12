@@ -96,8 +96,6 @@ class manager {
      * @return string The HTML for the form.
      */
     public function config_form ($preferences, $userid) {
-        global $CFG;
-
         // If the chatid is not set, display the link to do this.
         if (!$this->is_chatid_set($userid, $preferences)) {
             // Temporarily set the user's chatid to the sesskey value for security.
@@ -225,7 +223,7 @@ class manager {
         } else {
             $results = $this->get_updates();
             if ($results !== false) {
-                foreach ($results as $index => $object) {
+                foreach ($results as $object) {
                     if (isset($object->message)) {
                         if ($this->usersecret_match(substr($object->message->text, strlen('/start ')))) {
                             set_user_preference('message_processor_telegram_chatid', $object->message->chat->id, $userid);

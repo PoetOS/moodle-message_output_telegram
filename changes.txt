@@ -1,5 +1,8 @@
 Release Notes
 
+Version 3.2.5 (Build - 2017071200)
+Releases as stable.
+
 Version BETA 3.2.4 (Build - 2017052600)
 Improvements:
 Significant improvements to the setup process, with documentation at https://docs.moodle.org/33/en/Telegram_message_processor.
