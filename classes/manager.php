@@ -304,6 +304,6 @@ class manager {
             $this->curl = new \curl();
         }
 
-        return json_decode($this->curl->get('https://api.telegram.org/bot'.$this->config('sitebottoken').'/'.$command, $params));
+        return json_decode($this->curl->get('https://api.telegram.org/bot'.$this->config('sitebottoken').'/'.$command, $params, ["CURLOPT_RETURNTRANSFER" => true]));
     }
 }
