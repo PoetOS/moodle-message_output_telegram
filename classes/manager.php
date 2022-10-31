@@ -67,7 +67,12 @@ class manager {
             return true;
         }
 
-        $response = $this->send_api_command('sendMessage', ['chat_id' => $chatid, 'text' => $message]);
+        /**
+         * remove  <p>...</p> and <a href="...">...</a>
+         */
+        $msg = preg_replace('/<p>((.|\n)*)<\/p>/', '${1}', $message);
+        $msg = preg_replace('/<a href=[^>]*>(.*)<\/a>/','${1}',$msg);
+        $response = $this->send_api_command('sendMessage', ['chat_id' => $chatid, 'text' => $msg]);
         return (!empty($response) && isset($response->ok) && ($response->ok == true));
     }
 
