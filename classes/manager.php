@@ -67,7 +67,13 @@ class manager {
             return true;
         }
 
-        $response = $this->send_api_command('sendMessage', ['chat_id' => $chatid, 'text' => $message]);
+        /**
+         * remove  <p>...</p>, <a href="...">...</a>, <br/> 
+         */
+        $msg = preg_replace('/<p>((.|\n)*)<\/p>/', '${1}', $message);
+        $msg = preg_replace('/<a href=[^>]*>(.*)<\/a>/','${1}',$msg);
+        $msg = str_replace('<br/>', '', $msg);
+        $response = $this->send_api_command('sendMessage', ['chat_id' => $chatid, 'text' => $msg]);
         return (!empty($response) && isset($response->ok) && ($response->ok == true));
     }
 
@@ -304,6 +310,6 @@ class manager {
             $this->curl = new \curl();
         }
 
-        return json_decode($this->curl->get('https://api.telegram.org/bot'.$this->config('sitebottoken').'/'.$command, $params));
+        return json_decode($this->curl->get('https://api.telegram.org/bot'.$this->config('sitebottoken').'/'.$command, $params, ["CURLOPT_RETURNTRANSFER" => true]));
     }
 }
